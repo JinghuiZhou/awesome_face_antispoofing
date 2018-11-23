@@ -1,6 +1,7 @@
 # awesome_face_antispoofing
 -  The deep learning framework is Pytorch
--  Experiments results on NUAA
+-  We use face_alignment to extract landmarks for image. Using [GitHub Pages](https://github.com/1adrianb/face-alignment). Thanks to them.
+-  Experiments results on NUAA[1]
 
 |    Network    | Acc  | AUC  | EER  |
 |---------------|---|---|---|
@@ -17,3 +18,6 @@
 | DenseNet-169  |   |   |   |
 | DenseNet-201  |   |   |   |
 | Densenet-161  |   |   |   |
+
+
+[1]Tan X, Li Y, Liu J, et al. Face liveness detection from a single image with sparse low rank bilinear discriminative model[C]// European Conference on Computer Vision. Springer-Verlag, 2010:504-517.
