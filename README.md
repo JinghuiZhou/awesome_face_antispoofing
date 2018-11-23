@@ -1,7 +1,7 @@
 # awesome_face_antispoofing
 - The deep learning framework is Pytorch
 -
--|    Network    | Acc  | AUC  | EER  |
+- |    Network    | Acc  | AUC  | EER  |
 -|---------------|---|---|---|
 -| VGG-11        |   |   |   |
 -| VGG-13        |   |   |   |
