@@ -1,6 +1,6 @@
 # awesome_face_antispoofing
 -  The deep learning framework is Pytorch
--  We use face_alignment to extract landmarks for image. Using [GitHub Pages](https://github.com/1adrianb/face-alignment). Thanks to them.
+-  We use face_alignment to extract landmarks for image. Using [face_alignment](https://github.com/1adrianb/face-alignment). Thanks to them.
 -  Experiments results on NUAA[1]
 
 |    Network    | Acc  | AUC  | EER  |
