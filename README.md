@@ -16,17 +16,17 @@
 |---------------|---|---|---|
 | VGG-11        |  0.9628 |   |   |
 | VGG-13        |  0.9549 |   |   |
-| VGG-16        |   |   |   |
-| VGG-19        |   |   |   |
+| VGG-16        |  0.9642 |   |   |
+| VGG-19        |  0.9304 |   |   |
 | Res-18        |  0.9329 |   |   |
 | Res-34        |   |   |   |
 | Res-50        |  0.9941 |   |   |
 | SENet-1.0     |   |   |   |
 | SENet-1.1     |   |   |   |
-| DenseNet-121  |   |   |   |
-| DenseNet-169  |   |   |   |
-| DenseNet-201  |   |   |   |
-| Densenet-161  |   |   |   |
+| DenseNet-121  |  0.9467 |   |   |
+| DenseNet-169  |  0.9817 |   |   |
+| DenseNet-201  |  0.9905 |   |   |
+| Densenet-161  |  0.9540 |   |   |
 
 ## Reference
 [1]Tan X, Li Y, Liu J, et al. Face liveness detection from a single image with sparse low rank bilinear discriminative model[C]// European Conference on Computer Vision. Springer-Verlag, 2010:504-517.
