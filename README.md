@@ -1,5 +1,5 @@
 # awesome_face_antispoofing
-- The deep learning framework is Pytorch
+- The deep learning framework is Pytorch. Python3.5 is used.
 ## Face landmarks
 - We use face_alignment to extract landmarks for image. Using [face_alignment](https://github.com/1adrianb/face-alignment). Thanks to them.
 ### Landmarks extraction scripts
