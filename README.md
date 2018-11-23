@@ -1,9 +1,11 @@
 # awesome_face_antispoofing
 - The deep learning framework is Pytorch. Python3.5 is used.
 ## Face landmarks
-- We use face_alignment to extract landmarks for image. Using [face_alignment](https://github.com/1adrianb/face-alignment). Thanks to them.
+- face_alignment is used for landmarks extraction. Page [face_alignment](https://github.com/1adrianb/face-alignment). Thanks to them.
 ### Landmarks extraction scripts
 - cd detlandmark&&python3 detlandmark_imgs.py NUAA_raw_dir
+## Method
+- Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.  
 ## Experiments
 -  Experiments results on NUAA[1]
 
