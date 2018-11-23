@@ -2,7 +2,7 @@
 -  The deep learning framework is Pytorch
 ## face landmarks
 -  We use face_alignment to extract landmarks for image. Using [face_alignment](https://github.com/1adrianb/face-alignment). Thanks to them.
-## Experiments
+## experiments
 -  Experiments results on NUAA[1]
 
 |    Network    | Acc  | AUC  | EER  |
@@ -21,5 +21,5 @@
 | DenseNet-201  |   |   |   |
 | Densenet-161  |   |   |   |
 
-
+## reference
 [1]Tan X, Li Y, Liu J, et al. Face liveness detection from a single image with sparse low rank bilinear discriminative model[C]// European Conference on Computer Vision. Springer-Verlag, 2010:504-517.
