@@ -6,6 +6,9 @@
 - cd detlandmark&&python3 detlandmark_imgs.py NUAA_raw_dir
 ## Method
 - Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.  
+## Training
+- First, edit file *config.py*, choose the target network and proper batch_size.
+- Then, in terminal command: *make clean&&make&&python3 main.py train*
 ## Experiments
 -  Experiments results on NUAA[1]
 
