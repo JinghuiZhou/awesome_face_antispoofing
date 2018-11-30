@@ -5,6 +5,8 @@
 - face_alignment is used for landmarks extraction. Page [face_alignment](https://github.com/1adrianb/face-alignment). Thanks to them.
 ### Landmarks extraction scripts
 - cd detlandmark&&python3 detlandmark_imgs.py NUAA_raw_dir
+### Data
+- I have upload data and detected landmarks into GOOGLE DRIVE[raw.tar.gz](https://drive.google.com/file/d/1hF8vS6YeHkx3j2pfCeQqqZGwA_PJq_Da/view?usp=sharing)
 ## Method
 - Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.  
 ## Training
