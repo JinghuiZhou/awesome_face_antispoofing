@@ -18,17 +18,10 @@ from loss import FocalLoss
 from PIL import ImageFilter
 import random
 from PIL import Image
-
-ATTACK = 1
-GENUINE = 0
-train_filelists=[
-['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',ATTACK],
-['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',GENUINE]
-]
-test_filelists=[
-['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',ATTACK],
-['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',GENUINE]
-]
+import matplotlib.pyplot as plt
+import numpy as np
+import pickle
+import roc
 
 def blur(img):
     img = img.filter(ImageFilter.GaussianBlur(radius=random.random()))
@@ -39,34 +32,6 @@ def maxcrop(img):
 	img=img.crop(((w-size)//2,(h-size)//2, w-(w-size)//2,h-(h-size)//2))
 	return img
 
-'''
-
-data_transforms = {
-	'train' : transforms.Compose([
-		#transforms.RandomRotation((45)),
-		transforms.RandomHorizontalFlip(),
-		#transforms.RandomVerticalFlip(),
-		#transforms.Lambda(maxcrop),
-		#transforms.Lambda(blur),
-		transforms.Resize((224,224)) ,
-	   	transforms.ToTensor() ,
-		transforms.Normalize([0.485 , 0.456 , 0.406] , [0.229 , 0.224 , 0.225])
-	]) ,
-	'val' : transforms.Compose([
-		#transforms.Lambda(maxcrop),
-		transforms.Resize((224,224)) ,
-		#transforms.RandomHorizontalFlip(),
-		transforms.ToTensor() ,
-		transforms.Normalize([0.485 , 0.456 , 0.406] , [0.229 , 0.224 , 0.225])
-	]),
-	'test' : transforms.Compose([
-		#transforms.Lambda(maxcrop),
-		transforms.Resize((224,224)) ,
-		#transforms.RandomHorizontalFlip(),
-		transforms.ToTensor() ,
-		transforms.Normalize([0.485 , 0.456 , 0.406] , [0.229 , 0.224 , 0.225])
-	]) ,}
-'''
 def train(**kwargs):
 	# 根据命令行参数更新配置
 	opt.parse(kwargs)
@@ -88,19 +53,21 @@ def train(**kwargs):
 	   model.load(opt.load_model_path)
 	if opt.use_gpu: 
 		model.cuda()
-		summary(model, (3,224, 224))
+		summary(model, (3,opt.image_size, opt.image_size))
 	print(opt)
 	# step2: 数据
 	train_data = myData(
-			filelists=train_filelists,
+			filelists=opt.train_filelists,
 			#transform = data_transforms['train'],
+			image_size=opt.image_size,
                         scale = opt.cropscale,
 			transform = None,
 			test = False,
 			data_source='none')
 	val_data = myData(
-			filelists =test_filelists,
+			filelists =opt.test_filelists,
 			#transform =data_transforms['val'],
+			image_size=opt.image_size,
 			transform =None,
                         scale = opt.cropscale,
 			test = False,data_source = 'none')
@@ -273,22 +240,44 @@ def test(**kwargs):
 	model.train(False)
 	# 数据
 	#result_name = '../../model/se-resnet/test_se_resnet50'
-	test_data = myData(root = opt.test_root,datatxt='test.txt',
-				test = True,transform = data_transforms['test'])
-	test_loader =DataLoader(dataset = test_data,batch_size = opt.batch_size,shuffle = False)
+	test_data = myData(
+			filelists =opt.test_filelists,
+			image_size=opt.image_size,
+			#transform =data_transforms['val'],
+			transform =None,
+                        scale = opt.cropscale,
+			test = True,data_source = 'none')
+
+#	test_data = myData(root = opt.test_roo,datatxt='test.txt',
+#				test = True,transform = data_transforms['test'])
+	test_loader =DataLoader(dataset = test_data,batch_size = opt.batch_size//2,shuffle = False)
+	#test_loader =DataLoader(dataset = test_data,batch_size = opt.batch_size//2,shuffle =True)
 	
 	result_list=[]
 
+	label_list=[]	
+
 	for step,batch  in enumerate(tqdm(test_loader,desc='test', unit='batch')):
-		data,name  =  batch
+		data,label,image_path  =  batch
 		with torch.no_grad():
 			if opt.use_gpu:
 				data =  data.cuda()
 			outputs = model(data)
-			_ , preds = torch.max(outputs , 1)
-			#print(preds)
-			preds = preds.to("cpu").numpy()
-			preds=preds.data
+			outputs = torch.softmax(outputs,dim=-1)
+			preds = outputs.to('cpu').numpy()
+			for i in range(preds.shape[0]):
+				result_list.append(preds[i,1])
+				label_list.append(label[i])
+	metric =roc.cal_metric(label_list, result_list)
+	eer = metric[0]	
+	tprs = metric[1]	
+	auc = metric[2]
+	xy_dic = metric[3]
+	pickle.dump(xy_dic, open('result/xy.pickle','wb'))	
+	print('EER: {:.6f} TPR(1.0%): {:.6f} TPR(.5%): {:.6f} AUC: {:.8f}'.format(eer, tprs["TPR(1.%)"], tprs["TPR(.5%)"], auc),file=open('result/test.txt','a'))
+	print('EER: {:.6f} TPR(1.0%): {:.6f} TPR(.5%): {:.6f} AUC: {:.8f}'.format(eer, tprs["TPR(1.%)"], tprs["TPR(.5%)"], auc))
+
+'''
 			for i in range(len(name)):
 				result_dict={}
 				result_dict["image_id"]=name[i]
@@ -297,7 +286,7 @@ def test(**kwargs):
 	with open('checkpoints/'+opt.model+'/'+opt.result_name+'.json','w') as outfile:
 		json.dump(result_list,outfile,ensure_ascii=False)
 		outfile.write('\n')
-
+'''
 def help():
 	'''
 	打印帮助的信息： python file.py help

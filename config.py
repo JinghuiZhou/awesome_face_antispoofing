@@ -4,10 +4,17 @@ import warnings
 
 class DefaultConfig(object):
    model = 'MyresNet34' # 使用的模型，名字必须与models/__init__.py中的名字一致
-   env = model # visdom 环境
-   train_root = '' # 训练集存放路径
-   val_root = '' # 验证集存放路径
-   test_root = 'data/AgriculturalDisease_testA/' # 测试集存放路径
+   env = model #
+   ATTACK = 1
+   GENUINE = 0
+   train_filelists=[
+    ['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',ATTACK],
+    ['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',GENUINE]
+    ]
+   test_filelists=[
+    ['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',ATTACK],
+    ['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',GENUINE]
+    ]
    
    #load_model_path = 'checkpoints/model.pth' # 加载预训练的模型的路径，为None代表不加载
    load_model_path = None # 加载预训练的模型的路径，为None代表不加载
@@ -25,6 +32,7 @@ class DefaultConfig(object):
    lr_decay = 0.5 # when val_loss increase, lr = lr*lr_decay
    weight_decay = 1e-5 # 损失函数
    cropscale = 3.5
+   image_size = 331
 def parse(self, kwargs):
    '''
    根据字典kwargs 更新 config参数
