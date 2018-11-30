@@ -11,7 +11,7 @@
 - First, edit file *config.py*, choose the target network and proper batch_size.
 - Then, in terminal command: *make clean&&make&&python3 main.py train*
 ## Experiments
--  Experiments results on NUAA[1] Image input size is (224,224).
+-  Experiments results on NUAA[1] Image input size is as same as the imagenet.
 
 |    Network    | Acc  | AUC  | EER  | TPR(1.0%) | TPR(.5%)| 
 |---------------|---|---|---|---|---|
