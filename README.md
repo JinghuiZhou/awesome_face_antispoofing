@@ -28,7 +28,7 @@
 | Densenet-161  |  0.9540 | 0.99784970  | 0.020363  | 0.953331  | 0.894706  |
 | Inception-V3  |  0.9114 | 0.98636584  | 0.061354  | 0.693337  | 0.583299  |
 | Xception      |  0.9841 | 0.99929783  | 0.012338  | 0.983641  | 0.970793  |
-
+| DetNet        |  0.9685 | 0.99998105  | 0.001562  | 1.000000  | 0.999703  |
 
 ## Reference
 [1]Tan X, Li Y, Liu J, et al. Face liveness detection from a single image with sparse low rank bilinear discriminative model[C]// European Conference on Computer Vision. Springer-Verlag, 2010:504-517.
