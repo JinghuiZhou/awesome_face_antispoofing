@@ -6,7 +6,7 @@
 ### Landmarks extraction scripts
 - cd detlandmark&&python3 detlandmark_imgs.py NUAA_raw_dir
 ### Data
-- I have upload data and detected landmarks into [GOOGLE DRIVE-raw.tar.gz](https://drive.google.com/file/d/1hF8vS6YeHkx3j2pfCeQqqZGwA_PJq_Da/view?usp=sharing)
+- I have upload data and detected landmarks into [GOOGLE DRIVE-raw.tar.gz]()
 - You can change corresponding directory and filename in config.py
 - For example train_filelists=[
     ['raw/ClientRaw','raw/client_train_raw.txt',ATTACK],
