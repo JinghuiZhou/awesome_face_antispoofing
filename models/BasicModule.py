@@ -290,13 +290,14 @@ class MyresNet50(BasicModule):
         x = self.fc_Linear_lay2 (x)
         
         return x
-'''
 class MyInceptionV3(BasicModule):
     def __init__(self):
         super(MyInceptionV3, self).__init__()
         model = models.inception_v3(pretrained = True)
-        self.resnet_lay=nn.Sequential(*list(model.children())[:-1])
-        self.resnet_lay=nn.Sequential(*list(model.children())[:-1])
+        if self.training:
+             self.resnet_lay=nn.Sequential(*(list(model.children())[:13]+list(model.children())[14:-1]))
+        else:
+             self.resnet_lay=nn.Sequential(*(list(model.children())[:-1]))
         self.conv1_lay = nn.Conv2d(2048, 512, kernel_size = (1,1),stride=(1,1))
         self.relu1_lay = nn.ReLU(inplace = True)
         self.drop_lay = nn.Dropout2d(0.5)
@@ -312,9 +313,7 @@ class MyInceptionV3(BasicModule):
         x= self.global_average(x)
         x = x.view(x.size(0),-1)
         x = self.fc_Linear_lay2 (x)
-        
         return x
-'''
 class MydenseNet121(BasicModule):
     def __init__(self):
         super(MydenseNet121, self).__init__()
@@ -448,8 +447,75 @@ class MyseNet1_1(BasicModule):
         x = self.fc_Linear_lay2 (x)
         
         return x
+class Myxception(BasicModule):
+    def __init__(self):
+        super(Myxception, self).__init__()
+        from models.xception import xception
+        model = net=xception(pretrained = True)
+        self.resnet_lay=nn.Sequential(*list(model.children())[:-1])
+        self.conv1_lay = nn.Conv2d(2048, 512, kernel_size = (1,1),stride=(1,1))
+        self.relu1_lay = nn.ReLU(inplace = True)
+        self.drop_lay = nn.Dropout2d(0.5)
+        self.global_average = nn.AdaptiveAvgPool2d((1,1))
+        self.fc_Linear_lay2 = nn.Linear(512,2)
+        
 
+    def forward(self, x):
+        x= self.resnet_lay(x)
+        x = self.conv1_lay(x)
+        x = self.relu1_lay(x)
+        x = self.drop_lay(x)
+        x= self.global_average(x)
+        x = x.view(x.size(0),-1)
+        x = self.fc_Linear_lay2 (x)
+        
+        return x
+
+class MydetNet59(BasicModule):
+    def __init__(self):
+        super(MydetNet59, self).__init__()
+        from models.detnet import detnet59
+        model=detnet59(pretrained = True)
+        self.resnet_lay=nn.Sequential(*list(model.children())[:-2])
+        self.conv1_lay = nn.Conv2d(1024, 512, kernel_size = (1,1),stride=(1,1))
+        self.relu1_lay = nn.ReLU(inplace = True)
+        self.drop_lay = nn.Dropout2d(0.5)
+        self.global_average = nn.AdaptiveAvgPool2d((1,1))
+        self.fc_Linear_lay2 = nn.Linear(512,2)
+        
+
+    def forward(self, x):
+        x= self.resnet_lay(x)
+        x = self.conv1_lay(x)
+        x = self.relu1_lay(x)
+        x = self.drop_lay(x)
+        x= self.global_average(x)
+        x = x.view(x.size(0),-1)
+        x = self.fc_Linear_lay2 (x)
+        
+        return x
+class MynasNet(BasicModule):
+    def __init__(self):
+        super(MynasNet, self).__init__()
+        from models.nasnet import NASNetALarge 
+        self.resnet_lay=NASNetALarge()
+        self.conv1_lay = nn.Conv2d(4032, 512, kernel_size = (1,1),stride=(1,1))
+        self.relu1_lay = nn.ReLU(inplace = True)
+        self.drop_lay = nn.Dropout2d(0.5)
+        self.global_average = nn.AdaptiveAvgPool2d((1,1))
+        self.fc_Linear_lay2 = nn.Linear(512,2)
+        
+
+    def forward(self, x):
+        x= self.resnet_lay.features(x)
+        x = self.conv1_lay(x)
+        x = self.relu1_lay(x)
+        x = self.drop_lay(x)
+        x= self.global_average(x)
+        x = x.view(x.size(0),-1)
+        x = self.fc_Linear_lay2 (x)
+        
+        return x
 if __name__ == '__main__':
-    model = MyVgg19Net()
-    print(model)
+    model = Myxception()
     model.load()
