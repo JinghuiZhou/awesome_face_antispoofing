@@ -26,13 +26,13 @@
 
 |    Network    | Acc  | AUC  | EER  | TPR(1.0%) | TPR(.5%)| 
 |---------------|---|---|---|---|---|
-| VGG-11        |  0.9601 | 0.99319872  | 0.038188  | 0.832243  | 0.778703  |
-| VGG-13        |  0.9549 | 0.99473387  | 0.036166  | 0.876264  | 0.824372  |
-| VGG-16        |  0.9642 | 0.99509249  | 0.035693  | 0.886377  | 0.805989  |
-| VGG-19        |  0.9546 | 0.99366445  | 0.041047  | 0.868531  | 0.829566  |
-| Res-18        |  0.9329 | 0.99650029  | 0.026037  | 0.927127  | 0.857467  |
-| Res-34        |  0.9568 | 0.99489955  | 0.033501  | 0.877933  | 0.791791  |
-| Res-50        |  0.9941 | 0.99981480  | 0.005998  | 0.997271  | 0.992861  |
+| VGG-11[2]        |  0.9601 | 0.99319872  | 0.038188  | 0.832243  | 0.778703  |
+| VGG-13[2]        |  0.9549 | 0.99473387  | 0.036166  | 0.876264  | 0.824372  |
+| VGG-16[2]        |  0.9642 | 0.99509249  | 0.035693  | 0.886377  | 0.805989  |
+| VGG-19[2]        |  0.9546 | 0.99366445  | 0.041047  | 0.868531  | 0.829566  |
+| Res-18[3]        |  0.9329 | 0.99650029  | 0.026037  | 0.927127  | 0.857467  |
+| Res-34[3]        |  0.9568 | 0.99489955  | 0.033501  | 0.877933  | 0.791791  |
+| Res-50[3]        |  0.9941 | 0.99981480  | 0.005998  | 0.997271  | 0.992861  |
 | DenseNet-121  |  0.9467 | 0.99159944  | 0.046996  | 0.806068  | 0.709994  |
 | DenseNet-169  |  0.9817 | 0.99859679  | 0.015622  | 0.961695  | 0.919752  |
 | DenseNet-201  |  0.9235 | 0.97937384  | 0.096862  | 0.798037  | 0.713266  |
@@ -43,3 +43,5 @@
 
 ## Reference
 [1]Tan X, Li Y, Liu J, et al. Face liveness detection from a single image with sparse low rank bilinear discriminative model[C]// European Conference on Computer Vision. Springer-Verlag, 2010:504-517.
+[2]Simonyan K, Zisserman A. Very deep convolutional networks for large-scale image recognition[J]. arXiv preprint arXiv:1409.1556, 2014.
+[3]He K, Zhang X, Ren S, et al. Deep residual learning for image recognition[C]//Proceedings of the IEEE conference on computer vision and pattern recognition. 2016: 770-778.
