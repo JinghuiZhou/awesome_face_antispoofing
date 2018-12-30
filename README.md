@@ -1,9 +1,6 @@
 # awesome_face_antispoofing
 - This is a single shot face anti-spoofing project.
 - The deep learning framework is Pytorch. Python3.5 is used.
-## Pipeline
-Inline-style: 
-![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/pipeline.png "Our Pipeline")
 ## Face landmarks
 - face_alignment is used for landmarks extraction. Page [face_alignment](https://github.com/1adrianb/face-alignment). Thanks to them.
 ### Landmarks extraction scripts
@@ -21,6 +18,7 @@ Inline-style:
     ]
 ## Method
 - Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.  
+![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/pipeline.png "Our Pipeline")
 ## Training
 - First, edit file *config.py*, choose the target network and proper batch_size.
 - Then, in terminal command: *make clean&&make&&python3 main.py train*
