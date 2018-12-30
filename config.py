@@ -8,12 +8,12 @@ class DefaultConfig(object):
    ATTACK = 1
    GENUINE = 0
    train_filelists=[
-    ['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',ATTACK],
-    ['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',GENUINE]
+    ['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',GENUINE],
+    ['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',ATTACK]
     ]
    test_filelists=[
-    ['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',ATTACK],
-    ['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',GENUINE]
+    ['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',GENUINE],
+    ['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',ATTACK]
     ]
    
    #load_model_path = 'checkpoints/model.pth' # 加载预训练的模型的路径，为None代表不加载
@@ -30,9 +30,10 @@ class DefaultConfig(object):
    max_epoch = 10
    lr = 0.01 # initial learning rate
    lr_decay = 0.5 # when val_loss increase, lr = lr*lr_decay
+   lr_stepsize=3#learning step size
    weight_decay = 1e-5 # 损失函数
    cropscale = 3.5
-   image_size = 331
+   image_size = 224
 def parse(self, kwargs):
    '''
    根据字典kwargs 更新 config参数

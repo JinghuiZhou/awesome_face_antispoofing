@@ -1,4 +1,4 @@
-#coding:utf8
+#codin:utf8
 from config import opt
 import os
 import models
@@ -18,10 +18,22 @@ from loss import FocalLoss
 from PIL import ImageFilter
 import random
 from PIL import Image
+from deepfool import deepfool
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 import roc
+import cv2
+ATTACK = 1
+GENUINE = 0
+train_filelists=[
+['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',ATTACK],
+['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',GENUINE]
+]
+test_filelists=[
+['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',ATTACK],
+['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',GENUINE]
+]
 
 def blur(img):
     img = img.filter(ImageFilter.GaussianBlur(radius=random.random()))
@@ -32,6 +44,34 @@ def maxcrop(img):
 	img=img.crop(((w-size)//2,(h-size)//2, w-(w-size)//2,h-(h-size)//2))
 	return img
 
+'''
+
+data_transforms = {
+	'train' : transforms.Compose([
+		#transforms.RandomRotation((45)),
+		transforms.RandomHorizontalFlip(),
+		#transforms.RandomVerticalFlip(),
+		#transforms.Lambda(maxcrop),
+		#transforms.Lambda(blur),
+		transforms.Resize((224,224)) ,
+	   	transforms.ToTensor() ,
+		transforms.Normalize([0.485 , 0.456 , 0.406] , [0.229 , 0.224 , 0.225])
+	]) ,
+	'val' : transforms.Compose([
+		#transforms.Lambda(maxcrop),
+		transforms.Resize((224,224)) ,
+		#transforms.RandomHorizontalFlip(),
+		transforms.ToTensor() ,
+		transforms.Normalize([0.485 , 0.456 , 0.406] , [0.229 , 0.224 , 0.225])
+	]),
+	'test' : transforms.Compose([
+		#transforms.Lambda(maxcrop),
+		transforms.Resize((224,224)) ,
+		#transforms.RandomHorizontalFlip(),
+		transforms.ToTensor() ,
+		transforms.Normalize([0.485 , 0.456 , 0.406] , [0.229 , 0.224 , 0.225])
+	]) ,}
+'''
 def train(**kwargs):
 	# 根据命令行参数更新配置
 	opt.parse(kwargs)
@@ -53,21 +93,19 @@ def train(**kwargs):
 	   model.load(opt.load_model_path)
 	if opt.use_gpu: 
 		model.cuda()
-		summary(model, (3,opt.image_size, opt.image_size))
+		summary(model, (3,224, 224))
 	print(opt)
 	# step2: 数据
 	train_data = myData(
-			filelists=opt.train_filelists,
+			filelists=train_filelists,
 			#transform = data_transforms['train'],
-			image_size=opt.image_size,
                         scale = opt.cropscale,
 			transform = None,
 			test = False,
 			data_source='none')
 	val_data = myData(
-			filelists =opt.test_filelists,
+			filelists =test_filelists,
 			#transform =data_transforms['val'],
-			image_size=opt.image_size,
 			transform =None,
                         scale = opt.cropscale,
 			test = False,data_source = 'none')
@@ -92,7 +130,7 @@ def train(**kwargs):
 							momentum = 0.9,
 							weight_decay= opt.weight_decay)
 	exp_lr_scheduler = lr_scheduler.StepLR(optimizer , 
-					step_size = 8 , gamma = 0.5)
+					step_size = opt.lr_stepsize , gamma = 0.5)
 	#set learning rate every 10 epoch decrease 10%
 	# step4: 统计指标：平滑处理之后的损失，还有混淆矩阵
 
@@ -102,7 +140,7 @@ def train(**kwargs):
 	train_acc = meter.AverageValueMeter()#为了可视化增加的内容
 	val_acc = meter.AverageValueMeter()
 	previous_loss = 1e100
-	best_acc = 0.0
+	best_tpr = 0.0
 	# 训练
 	for epoch in range(opt.max_epoch):
 		print('Epoch {}/{}'.format(epoch ,opt.max_epoch - 1))
@@ -112,7 +150,7 @@ def train(**kwargs):
 		running_loss = 0.0
 		running_corrects = 0
 		exp_lr_scheduler.step() 
-		for step,batch in enumerate(tqdm(train_loader,desc='Train On Anti-spoofing', unit='batch')):
+		for step,batch in enumerate(tqdm(train_loader,desc='Train %s On Anti-spoofing'%(opt.model), unit='batch')):
 			inputs,labels= batch
 			 
 			if opt.use_gpu:
@@ -154,10 +192,16 @@ def train(**kwargs):
 		
 		val_loss.reset()
 		val_acc.reset()
-		val_cm,v_loss,v_accuracy = val(model,val_loader,dataset_sizes['val'])
+		val_cm,v_loss,v_accuracy,metric = val(model,val_loader,dataset_sizes['val'])
 		print('Val Loss: {:.8f} Acc: {:.4f}'.format(v_loss,v_accuracy))
 		val_loss.add(v_loss)
 		val_acc.add(v_accuracy)
+		
+		eer = metric[0]	
+		tprs = metric[1]	
+		auc = metric[2]
+		xy_dic = metric[3]
+		tpr1 = tprs['TPR(1.%)']
 		
 
 		vis.plot_many_stack({'train_loss':train_loss.value()[0],\
@@ -185,15 +229,17 @@ def train(**kwargs):
 		'''
 		vis.plot_many_stack({'lr':lr},win_name ='lr')
 		previous_loss = val_loss.value()[0]
-		if v_accuracy > best_acc:
-			best_acc = v_accuracy
-			best_acc_epoch = epoch
+		if tpr1 > best_tpr:
+			best_tpr = tpr1
+			best_tpr_epoch = epoch
 			#best_model_wts = model.state_dict()
 			os.system('mkdir -p %s'%(os.path.join('checkpoints',opt.model)))
 			model.save(name = 'checkpoints/'+opt.model+'/'+str(epoch)+'.pth')
-			print('Epoch: {:d} Val Loss: {:.8f} Acc: {:.4f}'.format(epoch,v_loss,v_accuracy),file=open('result/val.txt','a'))
+			#print('Epoch: {:d} Val Loss: {:.8f} Acc: {:.4f}'.format(epoch,v_loss,v_accuracy),file=open('result/val.txt','a'))
+			print('Epoch: {:d} Val Loss: {:.8f} Acc: {:.4f} EER: {:.6f} TPR(1.0%): {:.6f} TPR(.5%): {:.6f} AUC: {:.8f}'.format(epoch,v_loss,v_accuracy,eer, tprs["TPR(1.%)"], tprs["TPR(.5%)"], auc),file=open('result/val.txt','a'))
+			print('Epoch: {:d} Val Loss: {:.8f} Acc: {:.4f} EER: {:.6f} TPR(1.0%): {:.6f} TPR(.5%): {:.6f} AUC: {:.8f}'.format(epoch,v_loss,v_accuracy,eer, tprs["TPR(1.%)"], tprs["TPR(.5%)"], auc))
 		#model.load_state_dict(best_model_wts)	
-	print('Best val Epoch: {},Best val Acc: {:4f}'.format(best_acc_epoch,best_acc))
+	print('Best val Epoch: {},Best val TPR: {:4f}'.format(best_tpr_epoch,best_tpr))
 def val(model,dataloader,data_len):
 	# 把模型设为验证模式
 	criterion = FocalLoss(2)
@@ -201,7 +247,10 @@ def val(model,dataloader,data_len):
 	running_loss = 0
 	running_corrects = 0
 	confusion_matrix = meter.ConfusionMeter(2)
-	for ii, data in enumerate(tqdm(dataloader,desc='Val On Anti-spoofing', unit='batch')):
+	result_list=[]
+
+	label_list=[]	
+	for ii, data in enumerate(tqdm(dataloader,desc='Val %s On Anti-spoofing'%(opt.model), unit='batch')):
 		input, label = data
 		with torch.no_grad():
 			val_input = Variable(input)
@@ -215,13 +264,20 @@ def val(model,dataloader,data_len):
 		confusion_matrix.add(score.data.squeeze(), val_label)
 		running_loss += loss.item() * val_input.size(0)
 		running_corrects += torch.sum(preds == val_label.data)
+		
+		outputs = torch.softmax(score,dim=-1)
+		preds = outputs.to('cpu').detach().numpy()
+		for i_batch in range(preds.shape[0]):
+			result_list.append(preds[i_batch,1])
+			label_list.append(label[i_batch])
 	# 把模型恢复为训练模式
 	model.train(True)
-
+	
+	metric =roc.cal_metric(label_list, result_list)
 	cm_value = confusion_matrix.value()
 	val_loss = running_loss / data_len
 	val_accuracy = running_corrects.double() / float(data_len)
-	return confusion_matrix, val_loss,val_accuracy
+	return confusion_matrix, val_loss,val_accuracy,metric
 
 
 def test(**kwargs):
@@ -241,8 +297,7 @@ def test(**kwargs):
 	# 数据
 	#result_name = '../../model/se-resnet/test_se_resnet50'
 	test_data = myData(
-			filelists =opt.test_filelists,
-			image_size=opt.image_size,
+			filelists =test_filelists,
 			#transform =data_transforms['val'],
 			transform =None,
                         scale = opt.cropscale,
@@ -257,7 +312,7 @@ def test(**kwargs):
 
 	label_list=[]	
 
-	for step,batch  in enumerate(tqdm(test_loader,desc='test', unit='batch')):
+	for step,batch  in enumerate(tqdm(test_loader,desc='test %s'%(opt.model), unit='batch')):
 		data,label,image_path  =  batch
 		with torch.no_grad():
 			if opt.use_gpu:
@@ -287,6 +342,51 @@ def test(**kwargs):
 		json.dump(result_list,outfile,ensure_ascii=False)
 		outfile.write('\n')
 '''
+def fool(**kwargs):
+	import glob
+	pths = glob.glob('checkpoints/%s/*.pth'%(opt.model))
+	pths.sort(key=os.path.getmtime,reverse=True)
+	print(pths)
+	opt.parse(kwargs)
+	# 模型
+	opt.load_model_path=pths[0]
+	model = getattr(models, opt.model)().eval()
+	assert os.path.exists(opt.load_model_path)
+	if opt.load_model_path:
+	   model.load(opt.load_model_path)
+	if opt.use_gpu: model.cuda()
+	#model.train(False)
+	model.eval()
+	# 数据
+	#result_name = '../../model/se-resnet/test_se_resnet50'
+	fool_data = myData(
+			filelists =test_filelists,
+			#transform =data_transforms['val'],
+			transform =None,
+                        scale = opt.cropscale,
+			test = True,data_source = 'none')
+	fool_loader =DataLoader(dataset = fool_data,batch_size = 1,shuffle = False)
+	
+	result_list=[]
+	for step,batch  in enumerate(tqdm(fool_loader,desc='test', unit='batch')):
+		data,label,image_path  =  batch
+		if opt.use_gpu:
+			data =  data.cuda()
+		r, loop_i, label_orig, label_pert, pert_image = deepfool(data, model)
+		if 0:
+			out = torch.softmax(model(torch.from_numpy(r).cuda()+data), dim=-1)
+			print(label_orig, out)
+		else:
+			pickle.dump(np.transpose(r[0],(1,2,0))[:,:,::-1], open('result/%s'%(image_path[0].strip().split('/')[-1].replace('.jpg','.pickle')),'wb'))
+		if 0:
+			print('step:',step,'orig:',label_orig,'pert:', label_pert, image_path)
+			plt.subplot(131)
+			plt.imshow(np.uint8(np.transpose(data.cpu().numpy()[0],(1,2,0)))[:,:,::-1])
+			plt.subplot(133)
+			plt.imshow(np.transpose(r[0],(1,2,0))[:,:,::-1])
+			plt.subplot(132)
+			plt.imshow(np.uint8(np.transpose(pert_image.cpu().numpy()[0],(1,2,0)))[:,:,::-1])
+			plt.show()
 def help():
 	'''
 	打印帮助的信息： python file.py help
