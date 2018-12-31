@@ -7,8 +7,8 @@
 - cd detlandmark&&python3 detlandmark_imgs.py NUAA_raw_dir
 ### Data
 - I have upload data and detected landmarks into [GOOGLE DRIVE-raw.tar.gz](https://drive.google.com/file/d/1fe80Vo366h4uKylFwsSN3apvLXZZm02L/view?usp=sharing)
-[Baidu DRIVE-raw.tar.gz]
-(https://pan.baidu.com/s/1zXa5Z7qwQ_wb1p2xTUH4Kg)
+- I have upload data and detected landmarks into [Baidu DRIVE-raw.tar.gz](https://pan.baidu.com/s/1xeW2wJuxGPafgBTqhLKExg)
+
 - You can change corresponding directory and filename in config.py
 - For example train_filelists=[
     ['raw/ClientRaw','raw/client_train_raw.txt',GENUINE],
