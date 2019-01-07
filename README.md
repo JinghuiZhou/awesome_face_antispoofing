@@ -7,6 +7,8 @@
 - cd detlandmark&&python3 detlandmark_imgs.py NUAA_raw_dir
 ### Data
 - I have upload data and detected landmarks into [GOOGLE DRIVE-raw.tar.gz](https://drive.google.com/file/d/1fe80Vo366h4uKylFwsSN3apvLXZZm02L/view?usp=sharing)
+- I have upload data and detected landmarks into [Baidu DRIVE-raw.tar.gz](https://pan.baidu.com/s/1xeW2wJuxGPafgBTqhLKExg)
+
 - You can change corresponding directory and filename in config.py
 - For example train_filelists=[
     ['raw/ClientRaw','raw/client_train_raw.txt',GENUINE],
@@ -18,6 +20,7 @@
     ]
 ## Method
 - Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.  
+![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/pipeline.png "Our Pipeline")
 ## Training
 - First, edit file *config.py*, choose the target network and proper batch_size.
 - Then, in terminal command: *make clean&&make&&python3 main.py train*
@@ -34,9 +37,14 @@
 | Res-18        |  0.8759 | 0.99767664  | 0.022308  | 0.944378  | 0.919988  |
 | Res-34        |  0.8363 | 0.99806763  | 0.014277  | 0.969363  | 0.859012  |
 | Res-50        |  0.9231 | 0.99820910  | 0.013192  | 0.978418  | 0.902439  |
+| denseNet121   |  0.9847 | 0.99913086  | 0.015169  | 0.975312  | 0.955384  |
+| denseNet161   |  0.8419 | 0.99655236  | 0.027079  | 0.933076  | 0.891731  |
+| denseNet169   |  0.9801 | 0.99968893  | 0.004535  | 0.999703  | 0.997323  |
+| denseNet201   |  0.9912 | 0.99963239  | 0.008891  | 0.991969  | 0.984838  |
 | Xception      |  0.9843 | 0.99973281  | 0.005728  | 0.996431  | 0.993101  |
 | DetNet        |  0.9072 | 0.99998322  | 0.000892  | 0.999705  | 0.999703  |
-
+## Checkpoints
+-  I have upload trained models into [Baidu DRIVE-trained_models_NUAA](https://pan.baidu.com/s/19hVdkqiiX4aLxRodS9UAZg)
 ## Reference
 - [1]Tan X, Li Y, Liu J, et al. Face liveness detection from a single image with sparse low rank bilinear discriminative model[C]// European Conference on Computer Vision. Springer-Verlag, 2010:504-517.
 - [2]Simonyan K, Zisserman A. Very deep convolutional networks for large-scale image recognition[J]. arXiv preprint arXiv:1409.1556, 2014.
