@@ -11,10 +11,21 @@ from PIL import Image
 import json
 import os
 import cv2
+ATTACK = 1
+GENUINE = 0
+train_filelists=[
+['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',ATTACK],
+['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',GENUINE]
+]
+test_filelists=[
+['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',ATTACK],
+['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',GENUINE]
+]
+
 
 class myData(torch.utils.data.Dataset):
     
-    def __init__(self,filelists,scale=2.7,image_size=224,transform=None,test=False,data_source = None):
+    def __init__(self,filelists,scale=3.5,image_size=224,transform=None,test=False,data_source = None):
         self.transform = transform
         self.test = test
         self.img_label=[]
@@ -107,7 +118,7 @@ def maxcrop(img):
     img=img.crop(((w-size)//3,(h-size)//3, w-(w-size)//3,h-(h-size)//3))
     #img.show()
     return img
-if __name__ == '__main__':
+if 0:
     data_transforms = {
     'train' : transforms.Compose([
         #transforms.Lambda(blur),
@@ -151,4 +162,18 @@ if __name__ == '__main__':
             data,target = data.cuda(),target.cuda()
         data,target = Variable(data, volatile=True), Variable(target)
     
+if __name__ == '__main__':
+    import os
+    import sys
+    import pickle
+    imgdir = sys.argv[1]
+    train_data = myData(
+			filelists=train_filelists,
+			transform = None,
+			test = False,
+			data_source='none')
+    image = cv2.imread(imgdir)
+    landmark = pickle.load(open(imgdir.replace('.jpg','.pickle'),'rb'))[0]
+    result=train_data.crop_with_ldmk(image, landmark)
+    cv2.imwrite('crop.jpg',result)
     

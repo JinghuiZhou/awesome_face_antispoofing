@@ -18,23 +18,11 @@ from loss import FocalLoss
 from PIL import ImageFilter
 import random
 from PIL import Image
-from deepfool import deepfool
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 import roc
 import cv2
-ATTACK = 1
-GENUINE = 0
-train_filelists=[
-['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',ATTACK],
-['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',GENUINE]
-]
-test_filelists=[
-['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',ATTACK],
-['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',GENUINE]
-]
-
 def blur(img):
     img = img.filter(ImageFilter.GaussianBlur(radius=random.random()))
     return img
@@ -97,14 +85,14 @@ def train(**kwargs):
 	print(opt)
 	# step2: 数据
 	train_data = myData(
-			filelists=train_filelists,
+			filelists=opt.train_filelists,
 			#transform = data_transforms['train'],
                         scale = opt.cropscale,
 			transform = None,
 			test = False,
 			data_source='none')
 	val_data = myData(
-			filelists =test_filelists,
+			filelists =opt.test_filelists,
 			#transform =data_transforms['val'],
 			transform =None,
                         scale = opt.cropscale,
@@ -297,7 +285,7 @@ def test(**kwargs):
 	# 数据
 	#result_name = '../../model/se-resnet/test_se_resnet50'
 	test_data = myData(
-			filelists =test_filelists,
+			filelists =opt.test_filelists,
 			#transform =data_transforms['val'],
 			transform =None,
                         scale = opt.cropscale,
@@ -342,51 +330,6 @@ def test(**kwargs):
 		json.dump(result_list,outfile,ensure_ascii=False)
 		outfile.write('\n')
 '''
-def fool(**kwargs):
-	import glob
-	pths = glob.glob('checkpoints/%s/*.pth'%(opt.model))
-	pths.sort(key=os.path.getmtime,reverse=True)
-	print(pths)
-	opt.parse(kwargs)
-	# 模型
-	opt.load_model_path=pths[0]
-	model = getattr(models, opt.model)().eval()
-	assert os.path.exists(opt.load_model_path)
-	if opt.load_model_path:
-	   model.load(opt.load_model_path)
-	if opt.use_gpu: model.cuda()
-	#model.train(False)
-	model.eval()
-	# 数据
-	#result_name = '../../model/se-resnet/test_se_resnet50'
-	fool_data = myData(
-			filelists =test_filelists,
-			#transform =data_transforms['val'],
-			transform =None,
-                        scale = opt.cropscale,
-			test = True,data_source = 'none')
-	fool_loader =DataLoader(dataset = fool_data,batch_size = 1,shuffle = False)
-	
-	result_list=[]
-	for step,batch  in enumerate(tqdm(fool_loader,desc='test', unit='batch')):
-		data,label,image_path  =  batch
-		if opt.use_gpu:
-			data =  data.cuda()
-		r, loop_i, label_orig, label_pert, pert_image = deepfool(data, model)
-		if 0:
-			out = torch.softmax(model(torch.from_numpy(r).cuda()+data), dim=-1)
-			print(label_orig, out)
-		else:
-			pickle.dump(np.transpose(r[0],(1,2,0))[:,:,::-1], open('result/%s'%(image_path[0].strip().split('/')[-1].replace('.jpg','.pickle')),'wb'))
-		if 0:
-			print('step:',step,'orig:',label_orig,'pert:', label_pert, image_path)
-			plt.subplot(131)
-			plt.imshow(np.uint8(np.transpose(data.cpu().numpy()[0],(1,2,0)))[:,:,::-1])
-			plt.subplot(133)
-			plt.imshow(np.transpose(r[0],(1,2,0))[:,:,::-1])
-			plt.subplot(132)
-			plt.imshow(np.uint8(np.transpose(pert_image.cpu().numpy()[0],(1,2,0)))[:,:,::-1])
-			plt.show()
 def help():
 	'''
 	打印帮助的信息： python file.py help
