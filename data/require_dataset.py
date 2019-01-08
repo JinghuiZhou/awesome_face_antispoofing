@@ -65,18 +65,30 @@ class myData(torch.utils.data.Dataset):
             label = self.img_label[index]['class']
             #img = Image.open( image_path).convert('RGB')
             img = cv2.imread(image_path)
-            ldmk = pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb'))[0]
+            ldmk = np.asarray(pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb')))
+            if 0:
+                for pred in ldmk:
+                    for i in range(pred.shape[0]):
+                        x,y = pred[i]
+                        cv2.circle(img,(x,y),1,(0,0,255),-1)
+            ldmk = ldmk[np.argsort(np.std(ldmk[:,:,1],axis=1))[-1]]
             img =self.crop_with_ldmk(img, ldmk) 
         else:
             image_path =self.img_label[index]['path']
             label = self.img_label[index]['class']
             #img = Image.open( image_path).convert('RGB')
             img = cv2.imread(image_path)
-            ldmk = pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb'))[0]
+            ldmk = np.asarray(pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb')))
+            if 0:
+                for pred in ldmk:
+                    for i in range(pred.shape[0]):
+                        x,y = pred[i]
+                        cv2.circle(img,(x,y),1,(0,0,255),-1)
+            ldmk = ldmk[np.argsort(np.std(ldmk[:,:,1],axis=1))[-1]]
             img =self.crop_with_ldmk(img, ldmk) 
 
-
-       
+        #std = ldmk[:,0].std()
+        #img = cv2.putText(img,'%.2f'%(std),(img.shape[0]//10,img.shape[1]//2),cv2.FONT_HERSHEY_COMPLEX,1.,(0,0,255),2)
 
         if self.transform is not None:
             #print(self.transform)
