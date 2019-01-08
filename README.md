@@ -19,8 +19,8 @@
     ['raw/ImposterRaw','raw/imposter_test_raw.txt',ATTACK]
     ]
 ## Method
-- Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.  
-![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_train.jpg "Data Visualization")
+- Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.
+![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/pipeline.png "Our Pipeline")
 ## Training
 - First, edit file *config.py*, choose the target network and proper batch_size.
 - Then, in terminal command: *make clean&&make&&python3 main.py train*
@@ -28,8 +28,8 @@
 - We have fixed the bug of choice wrong face in multiple detected faces with standard of coordinates. 
 - To visualize cropped faces in dataset. Please run command: python3 vis_cropface.py visualize
 - All faces will be shown in data/showcropface_train.jpg and data/showcropface_val.jpg
-- The training data are shown here.
-![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/pipeline.png "Our Pipeline")
+- The training data are shown in the end.
+
 ## Experiments
 -  Experiments results on NUAA[1] Image input size is as same as the imagenet.
 -  State-of-the-art networks are used, e.g. VGG[2], ResNet[3], DenseNet[4], Inception[5], Xception[6], DetNet[7]
@@ -59,3 +59,4 @@
 - [5]Szegedy C, Vanhoucke V, Ioffe S, et al. Rethinking the inception architecture for computer vision[C]//Proceedings of the IEEE conference on computer vision and pattern recognition. 2016: 2818-2826.
 - [6]Chollet F. Xception: Deep learning with depthwise separable convolutions[J]. arXiv preprint, 2017: 1610.02357.
 - [7]Li Z, Peng C, Yu G, et al. DetNet: A Backbone network for Object Detection[J]. arXiv preprint arXiv:1804.06215, 2018.
+![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_train.jpg "Data Visualization")
