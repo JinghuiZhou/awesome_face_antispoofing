@@ -24,6 +24,10 @@
 ## Training
 - First, edit file *config.py*, choose the target network and proper batch_size.
 - Then, in terminal command: *make clean&&make&&python3 main.py train*
+## Visualize Dataset
+- We have fixed the bug of choice wrong face in multiple detected faces with standard of coordinates. 
+- To visualize cropped faces in dataset. Please run command: python3 vis_cropface.py visualize
+- All faces will be shown in data/showcropface_train.jpg and data/showcropface_val.jpg
 ## Experiments
 -  Experiments results on NUAA[1] Image input size is as same as the imagenet.
 -  State-of-the-art networks are used, e.g. VGG[2], ResNet[3], DenseNet[4], Inception[5], Xception[6], DetNet[7]
