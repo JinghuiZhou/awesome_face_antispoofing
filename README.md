@@ -28,7 +28,7 @@
 - We have fixed the bug of choice wrong face in multiple detected faces with standard of coordinates. 
 - To visualize cropped faces in dataset. Please run command: python3 vis_cropface.py visualize
 - All faces will be shown in data/showcropface_train.jpg and data/showcropface_val.jpg
-- The training data are shown in the end.
+- The training data are shown here.[Training](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_train.jpg) [Validation](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_val.jpg)
 
 ## Experiments
 -  Experiments results on NUAA[1] Image input size is as same as the imagenet.
@@ -59,4 +59,3 @@
 - [5]Szegedy C, Vanhoucke V, Ioffe S, et al. Rethinking the inception architecture for computer vision[C]//Proceedings of the IEEE conference on computer vision and pattern recognition. 2016: 2818-2826.
 - [6]Chollet F. Xception: Deep learning with depthwise separable convolutions[J]. arXiv preprint, 2017: 1610.02357.
 - [7]Li Z, Peng C, Yu G, et al. DetNet: A Backbone network for Object Detection[J]. arXiv preprint arXiv:1804.06215, 2018.
-![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_train.jpg "Data Visualization")
