@@ -1,4 +1,5 @@
-pip3 install https://download.pytorch.org/whl/cu80/torch-1.0.0-cp35-cp35m-win_amd64.whl
+#!/bin/bash
+pip3 install torch
 pip3 install torchvision
 pip3 install opencv-python
 pip3 install torchnet
@@ -16,4 +17,3 @@ pip3 install torchsummary
 pip3 install matplotlib
 pip3 install fire
 pip3 install sklearn
-
