@@ -19,7 +19,7 @@
     ['raw/ImposterRaw','raw/imposter_test_raw.txt',ATTACK]
     ]
 ## Method
-- Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.  
+- Our method is straightforward. Small patched containing a face is cropped with corresponding landmarks. A binary classification network is used to distinguish the attack patches.
 ![alt text](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/pipeline.png "Our Pipeline")
 ## Training
 - First, edit file *config.py*, choose the target network and proper batch_size.
@@ -28,6 +28,8 @@
 - We have fixed the bug of choice wrong face in multiple detected faces with standard of coordinates. 
 - To visualize cropped faces in dataset. Please run command: python3 vis_cropface.py visualize
 - All faces will be shown in data/showcropface_train.jpg and data/showcropface_val.jpg
+- The training data are shown here.[Training](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_train.jpg) [Validation](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_val.jpg)
+
 ## Experiments
 -  Experiments results on NUAA[1] Image input size is as same as the imagenet.
 -  State-of-the-art networks are used, e.g. VGG[2], ResNet[3], DenseNet[4], Inception[5], Xception[6], DetNet[7]
