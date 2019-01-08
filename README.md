@@ -32,7 +32,7 @@
 - We have fixed the bug of choice wrong face in multiple detected faces with standard of coordinates. 
 - To visualize cropped faces in dataset. Please run command: python3 vis_cropface.py visualize
 - All faces will be shown in data/showcropface_train.jpg and data/showcropface_val.jpg
-- The training data are shown here.[Training](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_train.jpg) [Validation](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_val.jpg)
+- The training data are shown here. [Training](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_train.jpg) [Validation](https://github.com/JinghuiZhou/awesome_face_antispoofing/blob/master/data/showcropface_val.jpg)
 
 ## Experiments
 -  Experiments results on NUAA[1] Image input size is as same as the imagenet.
