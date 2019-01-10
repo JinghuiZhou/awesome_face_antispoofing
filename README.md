@@ -53,8 +53,7 @@
 | denseNet201   |  0.9912 | 0.99963239  | 0.008891  | 0.991969  | 0.984838  |
 | Xception      |  0.9843 | 0.99973281  | 0.005728  | 0.996431  | 0.993101  |
 | DetNet        |  0.9072 | 0.99998322  | 0.000892  | 0.999705  | 0.999703  |
-## Checkpoints
--  I have upload trained models into [Baidu DRIVE-trained_models_NUAA](https://pan.baidu.com/s/19hVdkqiiX4aLxRodS9UAZg)
+
 ## Reference
 - [1]Tan X, Li Y, Liu J, et al. Face liveness detection from a single image with sparse low rank bilinear discriminative model[C]// European Conference on Computer Vision. Springer-Verlag, 2010:504-517.
 - [2]Simonyan K, Zisserman A. Very deep convolutional networks for large-scale image recognition[J]. arXiv preprint arXiv:1409.1556, 2014.
