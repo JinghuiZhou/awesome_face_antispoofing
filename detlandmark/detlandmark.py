@@ -15,7 +15,8 @@ for pred in preds:
 	print('ldmk num:', pred.shape[0])
 	for i in range(pred.shape[0]):
 		x,y = pred[i]
-		print(x,y)
 		cv2.circle(img,(x,y),1,(0,0,255),-1)
-	cv2.imshow('-',img)
-	cv2.waitKey()
+	cv2.imwrite(imgdir.replace('.jpg','_draw.jpg'),img)
+pickle.dump(preds, open(imgdir.replace('.jpg','.pickle'),'wb'))
+	#cv2.imshow('-',img)
+	#cv2.waitKey()

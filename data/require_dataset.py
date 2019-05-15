@@ -6,25 +6,14 @@ import random
 import torch
 from torchvision import transforms
 from  torch.autograd import Variable
-import numpy as np 
+import numpy as np
 from PIL import Image
 import json
 import os
 import cv2
-ATTACK = 1
-GENUINE = 0
-train_filelists=[
-['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_train_raw.txt',ATTACK],
-['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_train_raw.txt',GENUINE]
-]
-test_filelists=[
-['/home/cv/zjh/aich/dataset/raw/ClientRaw','/home/cv/zjh/aich/dataset/raw/client_test_raw.txt',ATTACK],
-['/home/cv/zjh/aich/dataset/raw/ImposterRaw','/home/cv/zjh/aich/dataset/raw/imposter_test_raw.txt',GENUINE]
-]
-
 
 class myData(torch.utils.data.Dataset):
-    
+
     def __init__(self,filelists,scale=2.7,image_size=224,transform=None,test=False,data_source = None):
         self.transform = transform
         self.test = test
@@ -55,7 +44,7 @@ class myData(torch.utils.data.Dataset):
                     imgdir = imgdir.replace('\\','/')
                     self.img_label.append({'path':os.path.join(root, imgdir), 'class': label, 'ldmk': l})
 
-        
+
     def crop_with_ldmk(self,image, landmark):
         ct_x, std_x = landmark[:,0].mean(), landmark[:,0].std()
         ct_y, std_y = landmark[:,1].mean(), landmark[:,1].std()
@@ -63,12 +52,12 @@ class myData(torch.utils.data.Dataset):
         std_x, std_y = self.scale * std_x, self.scale * std_y
 
         src = np.float32([(ct_x, ct_y), (ct_x + std_x, ct_y + std_y), (ct_x + std_x, ct_y)])
-        dst = np.float32([((self.image_size -1 )/ 2.0, (self.image_size -1)/ 2.0), 
-				  ((self.image_size-1), (self.image_size -1 )), 
+        dst = np.float32([((self.image_size -1 )/ 2.0, (self.image_size -1)/ 2.0),
+				  ((self.image_size-1), (self.image_size -1 )),
 				  ((self.image_size -1 ), (self.image_size - 1)/2.0)])
         retval = cv2.getAffineTransform(src, dst)
         result = cv2.warpAffine(image, retval, (self.image_size, self.image_size), flags = cv2.INTER_LINEAR, borderMode = cv2.BORDER_CONSTANT)
-        return result 
+        return result
 
     def __getitem__(self,index):#第二步装载数据，返回[img,label]
         if self.test == False:
@@ -76,24 +65,36 @@ class myData(torch.utils.data.Dataset):
             label = self.img_label[index]['class']
             #img = Image.open( image_path).convert('RGB')
             img = cv2.imread(image_path)
-            ldmk = pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb'))[0]
-            img =self.crop_with_ldmk(img, ldmk) 
+            ldmk = np.asarray(pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb')))
+            if 0:
+                for pred in ldmk:
+                    for i in range(pred.shape[0]):
+                        x,y = pred[i]
+                        cv2.circle(img,(x,y),1,(0,0,255),-1)
+            ldmk = ldmk[np.argsort(np.std(ldmk[:,:,1],axis=1))[-1]]
+            img =self.crop_with_ldmk(img, ldmk)
         else:
             image_path =self.img_label[index]['path']
             label = self.img_label[index]['class']
             #img = Image.open( image_path).convert('RGB')
             img = cv2.imread(image_path)
-            ldmk = pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb'))[0]
-            img =self.crop_with_ldmk(img, ldmk) 
+            ldmk = np.asarray(pickle.load(open(image_path.replace('.jpg','_ldmk.pickle'),'rb')))
+            if 0:
+                for pred in ldmk:
+                    for i in range(pred.shape[0]):
+                        x,y = pred[i]
+                        cv2.circle(img,(x,y),1,(0,0,255),-1)
+            ldmk = ldmk[np.argsort(np.std(ldmk[:,:,1],axis=1))[-1]]
+            img =self.crop_with_ldmk(img, ldmk)
 
-
-       
+        #std = ldmk[:,0].std()
+        #img = cv2.putText(img,'%.2f'%(std),(img.shape[0]//10,img.shape[1]//2),cv2.FONT_HERSHEY_COMPLEX,1.,(0,0,255),2)
 
         if self.transform is not None:
             #print(self.transform)
             img = self.transform(img)
         if 0:
-            cv2.imshow('crop face',img) 
+            cv2.imshow('crop face',img)
             cv2.waitKey()
 
         if(self.test ==False):
@@ -139,7 +140,7 @@ if __name__ == '__main__':
         transforms.Normalize([0.485 , 0.456 , 0.406] , [0.229 , 0.224 , 0.225])
     ]),
     }
-    
+
     train_data = myData(
 			filelists=train_filelists,
 			transform = None,
@@ -154,12 +155,12 @@ if __name__ == '__main__':
     val_loader = Data.DataLoader(dataset = val_data,batch_size = 1,shuffle = True)
 
 
-    
+
     for step,batch in enumerate(train_loader):
         data,target = batch
         #data.show()
         if torch.cuda.is_available():
             data,target = data.cuda(),target.cuda()
         data,target = Variable(data, volatile=True), Variable(target)
-    
-    
+
+
